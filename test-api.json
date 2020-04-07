@@ -1,0 +1,519 @@
+{
+	"info": {
+		"_postman_id": "c562aea9-a26e-413f-a7c6-947a1a139d61",
+		"name": "test-api.k6.io",
+		"description": "Collection of APIs and examples demonstrating the power of k6",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Public APIs",
+			"item": [
+				{
+					"name": "List all public crocodiles",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/public/crocodiles/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"public",
+								"crocodiles",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a single public crocodile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/public/crocodiles/1/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"public",
+								"crocodiles",
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "b13e84d3-ff66-4eb8-9908-3dc705cb9d8f",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "29ff1778-986a-4bbe-9ef2-a6253f428272",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Registration and authentication",
+			"item": [
+				{
+					"name": "Register a new user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{USERNAME}}\",\n    \"first_name\": \"{{FIRSTNAME}}\",\n    \"last_name\": \"{{LASTNAME}}\",\n    \"email\": \"{{EMAIL}}\",\n    \"password\": \"{{PASSWORD}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user/register/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user",
+								"register",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bearer/JWT token authentication",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a25af011-3fda-4486-b314-3ba1740ccb95",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"pm.environment.set(\"REFRESH\", jsonData.refresh);",
+									"pm.environment.set(\"ACCESS\", jsonData.access);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "5e0baf7e-c763-46bc-a2bb-28f648c238da",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"{{USERNAME}}\",\n    \"password\": \"{{PASSWORD}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/auth/token/login/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"login",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Private APIs",
+			"item": [
+				{
+					"name": "List all your crocodiles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "649532dd-5dbb-44e0-a9c0-c808d18f910a",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData[0].hasOwnProperty(\"id\")) {",
+									"    pm.environment.set(\"CROCID\", jsonData[0].id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b0fd2a00-be76-479d-b419-7cedb308aa03",
+								"exec": [
+									"const baseUrl = pm.collectionVariables.get(\"BASE_URL\");",
+									"",
+									"const getTokenRequest = {",
+									"  url: baseUrl + \"/auth/token/login/\",",
+									"  method: \"POST\",",
+									"  header: \"Content-Type:application/json\",",
+									"  body: {",
+									"    mode: \"application/json\",",
+									"    raw: JSON.stringify(",
+									"        {",
+									"        \tusername: \"{{USERNAME}}\",",
+									"        \tpassword: \"{{PASSWORD}}\"",
+									"        })",
+									"  }",
+									"};",
+									"",
+									"pm.sendRequest(getTokenRequest, function(err, res) {",
+									"    if (err === null) {",
+									"        var jsonData = res.json();",
+									"        pm.environment.set(\"REFRESH\", jsonData.refresh);",
+									"        pm.environment.set(\"ACCESS\", jsonData.access);",
+									"    }",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/my/crocodiles/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"my",
+								"crocodiles",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get a single crocodile",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c42e4722-8cdb-4d01-b7c3-d9a46b4d0ba1",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{PASSWORD}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{USERNAME}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/my/crocodiles/{{CROCID}}",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"my",
+								"crocodiles",
+								"{{CROCID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create a new crocodile (max 100)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a4acd95a-182f-4a6a-bff8-52cd4821e192",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData.hasOwnProperty(\"id\")) {",
+									"    pm.environment.set(\"CROCID\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Crocodile1\",\n\t\"sex\": \"M\",\n\t\"date_of_birth\": \"2020-04-03\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/my/crocodiles/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"my",
+								"crocodiles",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update your crocodile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a4acd95a-182f-4a6a-bff8-52cd4821e192",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData.hasOwnProperty(\"id\")) {",
+									"    pm.environment.set(\"CROCID\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"name\": \"Croc\",\n\t\"sex\": \"M\",\n\t\"date_of_birth\": \"2020-04-03\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/my/crocodiles/{{CROCID}}/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"my",
+								"crocodiles",
+								"{{CROCID}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update selected fields on your crocodile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a4acd95a-182f-4a6a-bff8-52cd4821e192",
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);",
+									"if (jsonData.hasOwnProperty(\"id\")) {",
+									"    pm.environment.set(\"CROCID\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"date_of_birth\": \"2019-04-03\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/my/crocodiles/{{CROCID}}/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"my",
+								"crocodiles",
+								"{{CROCID}}",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove your crocodile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a4acd95a-182f-4a6a-bff8-52cd4821e192",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{ACCESS}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/my/crocodiles/{{CROCID}}/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"my",
+								"crocodiles",
+								"{{CROCID}}",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "f21acdb4-23dc-4d85-8e13-c0c15fe220bd",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "04b521e2-5989-4c9e-a5d2-2003bea65097",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "2e68f305-77d6-432a-aa42-d7bb0662dbb7",
+			"key": "BASE_URL",
+			"value": "https://test-api.k6.io/",
+			"type": "string"
+		}
+	],
+	"protocolProfileBehavior": {}
+}
