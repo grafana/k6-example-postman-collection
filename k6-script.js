@@ -9,8 +9,7 @@ import {
 
 export let options = {
   maxRedirects: 4,
-  iterations: "1000",
-  vus: 100
+  iterations: "1000"
 };
 
 const Request = Symbol.for("request");
@@ -18,6 +17,16 @@ postman[Symbol.for("initial")]({
   options,
   collection: {
     BASE_URL: "https://test-api.k6.io/"
+  },
+  environment: {
+    USERNAME: "test@example.com",
+    PASSWORD: "superCroc2020",
+    FIRSTNAME: "John",
+    LASTNAME: "Doe",
+    EMAIL: "test@example.com",
+    ACCESS: null,
+    REFRESH: null,
+    CROCID: null
   }
 });
 
@@ -25,14 +34,14 @@ export default function () {
   group("Public APIs", function () {
     postman[Request]({
       name: "List all public crocodiles",
-      id: "0d4c1d5a-b731-451b-b72d-7150fbb99e01",
+      id: "3ddd46c4-1618-4883-82ff-1b1e3a5f1091",
       method: "GET",
       address: "{{BASE_URL}}/public/crocodiles/"
     });
 
     postman[Request]({
       name: "Get a single public crocodile",
-      id: "c6849af3-57cf-49fe-887f-231e26b67b18",
+      id: "9625f17a-b739-4f91-af99-fba1d898953b",
       method: "GET",
       address: "{{BASE_URL}}/public/crocodiles/1/"
     });
@@ -41,7 +50,7 @@ export default function () {
   group("Registration and authentication", function () {
     postman[Request]({
       name: "Register a new user",
-      id: "7698e07f-2df6-450a-9f93-08daeb02b36e",
+      id: "d240e1c0-4034-4b3a-90f1-17d927be9ed5",
       method: "POST",
       address: "{{BASE_URL}}/user/register/",
       data: '{\n    "username": "{{USERNAME}}",\n    "first_name": "{{FIRSTNAME}}",\n    "last_name": "{{LASTNAME}}",\n    "email": "{{EMAIL}}",\n    "password": "{{PASSWORD}}"\n}'
@@ -49,7 +58,7 @@ export default function () {
 
     postman[Request]({
       name: "Bearer/JWT token authentication",
-      id: "3ac0c1c4-2501-4c25-956e-c52e8798c220",
+      id: "bb2e85a9-39e8-4782-bae6-5fa4c2a4e026",
       method: "POST",
       address: "{{BASE_URL}}/auth/token/login/",
       data: '{\n    "username": "{{USERNAME}}",\n    "password": "{{PASSWORD}}"\n}',
@@ -64,7 +73,7 @@ export default function () {
   group("Private APIs", function () {
     postman[Request]({
       name: "List all your crocodiles",
-      id: "61fac511-fe16-41aa-833d-58c3d3fd7141",
+      id: "7e3f7e7a-cf52-4333-88b8-4f9e4fdfeb4e",
       method: "GET",
       address: "{{BASE_URL}}/my/crocodiles/",
       pre() {
@@ -101,7 +110,7 @@ export default function () {
 
     postman[Request]({
       name: "Get a single crocodile",
-      id: "e140b9f7-897f-4488-982a-bddafd05ab07",
+      id: "8677d7a6-88d4-4dd7-8eba-2ed32d1630c4",
       method: "GET",
       address: "{{BASE_URL}}/my/crocodiles/{{CROCID}}",
       auth(config, Var) {
@@ -115,7 +124,7 @@ export default function () {
 
     postman[Request]({
       name: "Create a new crocodile (max 100)",
-      id: "0773277a-d329-43c3-9189-955adbe14c9f",
+      id: "4a0934d4-bbe8-4753-9e6b-8f3f81ad2e80",
       method: "POST",
       address: "{{BASE_URL}}/my/crocodiles/",
       data: '{\n\t"name": "Crocodile1",\n\t"sex": "M",\n\t"date_of_birth": "2020-04-03"\n}',
@@ -132,7 +141,7 @@ export default function () {
 
     postman[Request]({
       name: "Update your crocodile",
-      id: "8adb955c-9167-4606-a892-a4ea3e132944",
+      id: "4d2f2942-1a10-4475-801b-531769386da9",
       method: "PUT",
       address: "{{BASE_URL}}/my/crocodiles/{{CROCID}}/",
       data: '{\n\t"name": "Croc",\n\t"sex": "M",\n\t"date_of_birth": "2020-04-03"\n}',
@@ -149,7 +158,7 @@ export default function () {
 
     postman[Request]({
       name: "Update selected fields on your crocodile",
-      id: "bd3e3958-9f21-41cd-808b-2a7ae8103004",
+      id: "12996b9f-f9f4-4437-b449-3b9ed55fc94b",
       method: "PATCH",
       address: "{{BASE_URL}}/my/crocodiles/{{CROCID}}/",
       data: '{\n\t"date_of_birth": "2019-04-03"\n}',
@@ -166,7 +175,7 @@ export default function () {
 
     postman[Request]({
       name: "Remove your crocodile",
-      id: "62eb87f2-08d3-4b2b-a4c0-fc1f190179aa",
+      id: "35cf4ded-6617-4139-b322-a26085a5695b",
       method: "DELETE",
       address: "{{BASE_URL}}/my/crocodiles/{{CROCID}}/",
       auth(config, Var) {
