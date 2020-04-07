@@ -3,9 +3,15 @@
 import "./libs/shim/core.js";
 import "./libs/shim/urijs.js";
 import URI from "./libs/urijs.js";
-import { group } from "k6";
+import {
+  group
+} from "k6";
 
-export let options = { maxRedirects: 4, iterations: "1000" };
+export let options = {
+  maxRedirects: 4,
+  iterations: "1000",
+  vus: 100
+};
 
 const Request = Symbol.for("request");
 postman[Symbol.for("initial")]({
@@ -15,8 +21,8 @@ postman[Symbol.for("initial")]({
   }
 });
 
-export default function() {
-  group("Public APIs", function() {
+export default function () {
+  group("Public APIs", function () {
     postman[Request]({
       name: "List all public crocodiles",
       id: "0d4c1d5a-b731-451b-b72d-7150fbb99e01",
@@ -32,14 +38,13 @@ export default function() {
     });
   });
 
-  group("Registration and authentication", function() {
+  group("Registration and authentication", function () {
     postman[Request]({
       name: "Register a new user",
       id: "7698e07f-2df6-450a-9f93-08daeb02b36e",
       method: "POST",
       address: "{{BASE_URL}}/user/register/",
-      data:
-        '{\n    "username": "{{USERNAME}}",\n    "first_name": "{{FIRSTNAME}}",\n    "last_name": "{{LASTNAME}}",\n    "email": "{{EMAIL}}",\n    "password": "{{PASSWORD}}"\n}'
+      data: '{\n    "username": "{{USERNAME}}",\n    "first_name": "{{FIRSTNAME}}",\n    "last_name": "{{LASTNAME}}",\n    "email": "{{EMAIL}}",\n    "password": "{{PASSWORD}}"\n}'
     });
 
     postman[Request]({
@@ -47,8 +52,7 @@ export default function() {
       id: "3ac0c1c4-2501-4c25-956e-c52e8798c220",
       method: "POST",
       address: "{{BASE_URL}}/auth/token/login/",
-      data:
-        '{\n    "username": "{{USERNAME}}",\n    "password": "{{PASSWORD}}"\n}',
+      data: '{\n    "username": "{{USERNAME}}",\n    "password": "{{PASSWORD}}"\n}',
       post(response) {
         var jsonData = JSON.parse(responseBody);
         pm.environment.set("REFRESH", jsonData.refresh);
@@ -57,7 +61,7 @@ export default function() {
     });
   });
 
-  group("Private APIs", function() {
+  group("Private APIs", function () {
     postman[Request]({
       name: "List all your crocodiles",
       id: "61fac511-fe16-41aa-833d-58c3d3fd7141",
@@ -79,7 +83,7 @@ export default function() {
           }
         };
 
-        pm.sendRequest(getTokenRequest, function(err, res) {
+        pm.sendRequest(getTokenRequest, function (err, res) {
           if (err === null) {
             var jsonData = res.json();
             pm.environment.set("REFRESH", jsonData.refresh);
@@ -114,8 +118,7 @@ export default function() {
       id: "0773277a-d329-43c3-9189-955adbe14c9f",
       method: "POST",
       address: "{{BASE_URL}}/my/crocodiles/",
-      data:
-        '{\n\t"name": "Crocodile1",\n\t"sex": "M",\n\t"date_of_birth": "2020-04-03"\n}',
+      data: '{\n\t"name": "Crocodile1",\n\t"sex": "M",\n\t"date_of_birth": "2020-04-03"\n}',
       post(response) {
         var jsonData = JSON.parse(responseBody);
         if (jsonData.hasOwnProperty("id")) {
@@ -132,8 +135,7 @@ export default function() {
       id: "8adb955c-9167-4606-a892-a4ea3e132944",
       method: "PUT",
       address: "{{BASE_URL}}/my/crocodiles/{{CROCID}}/",
-      data:
-        '{\n\t"name": "Croc",\n\t"sex": "M",\n\t"date_of_birth": "2020-04-03"\n}',
+      data: '{\n\t"name": "Croc",\n\t"sex": "M",\n\t"date_of_birth": "2020-04-03"\n}',
       post(response) {
         var jsonData = JSON.parse(responseBody);
         if (jsonData.hasOwnProperty("id")) {
