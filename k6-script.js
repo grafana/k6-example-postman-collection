@@ -9,7 +9,8 @@ import {
 
 export let options = {
   maxRedirects: 4,
-  iterations: "1000"
+  iterations: "100",
+  vus: 100
 };
 
 const Request = Symbol.for("request");
@@ -63,7 +64,7 @@ export default function () {
       address: "{{BASE_URL}}/auth/token/login/",
       data: '{\n    "username": "{{USERNAME}}",\n    "password": "{{PASSWORD}}"\n}',
       post(response) {
-        var jsonData = JSON.parse(responseBody);
+        var jsonData = response.json();
         pm.environment.set("REFRESH", jsonData.refresh);
         pm.environment.set("ACCESS", jsonData.access);
       }
@@ -76,34 +77,10 @@ export default function () {
       id: "7e3f7e7a-cf52-4333-88b8-4f9e4fdfeb4e",
       method: "GET",
       address: "{{BASE_URL}}/my/crocodiles/",
-      pre() {
-        const baseUrl = pm.collectionVariables.get("BASE_URL");
-
-        const getTokenRequest = {
-          url: baseUrl + "/auth/token/login/",
-          method: "POST",
-          header: "Content-Type:application/json",
-          body: {
-            mode: "application/json",
-            raw: JSON.stringify({
-              username: "{{USERNAME}}",
-              password: "{{PASSWORD}}"
-            })
-          }
-        };
-
-        pm.sendRequest(getTokenRequest, function (err, res) {
-          if (err === null) {
-            var jsonData = res.json();
-            pm.environment.set("REFRESH", jsonData.refresh);
-            pm.environment.set("ACCESS", jsonData.access);
-          }
-        });
-      },
       post(response) {
-        var jsonData = JSON.parse(responseBody);
-        if (jsonData[0].hasOwnProperty("id")) {
-          pm.environment.set("CROCID", jsonData[0].id);
+        var id = response.json("0.id");
+        if (id) {
+          pm.environment.set("CROCID", id);
         }
       }
     });
@@ -129,9 +106,9 @@ export default function () {
       address: "{{BASE_URL}}/my/crocodiles/",
       data: '{\n\t"name": "Crocodile1",\n\t"sex": "M",\n\t"date_of_birth": "2020-04-03"\n}',
       post(response) {
-        var jsonData = JSON.parse(responseBody);
-        if (jsonData.hasOwnProperty("id")) {
-          pm.environment.set("CROCID", jsonData.id);
+        var id = response.json("id");
+        if (id) {
+          pm.environment.set("CROCID", id);
         }
       },
       auth(config, Var) {
@@ -146,9 +123,9 @@ export default function () {
       address: "{{BASE_URL}}/my/crocodiles/{{CROCID}}/",
       data: '{\n\t"name": "Croc",\n\t"sex": "M",\n\t"date_of_birth": "2020-04-03"\n}',
       post(response) {
-        var jsonData = JSON.parse(responseBody);
-        if (jsonData.hasOwnProperty("id")) {
-          pm.environment.set("CROCID", jsonData.id);
+        var id = response.json("id");
+        if (id) {
+          pm.environment.set("CROCID", id);
         }
       },
       auth(config, Var) {
@@ -163,9 +140,9 @@ export default function () {
       address: "{{BASE_URL}}/my/crocodiles/{{CROCID}}/",
       data: '{\n\t"date_of_birth": "2019-04-03"\n}',
       post(response) {
-        var jsonData = JSON.parse(responseBody);
-        if (jsonData.hasOwnProperty("id")) {
-          pm.environment.set("CROCID", jsonData.id);
+        var id = response.json("id");
+        if (id) {
+          pm.environment.set("CROCID", id);
         }
       },
       auth(config, Var) {
