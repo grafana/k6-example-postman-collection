@@ -9,7 +9,7 @@ import {
 
 export let options = {
   maxRedirects: 4,
-  iterations: "100",
+  duration: "1m",
   vus: 100
 };
 
