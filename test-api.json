@@ -511,7 +511,7 @@
 		{
 			"id": "2e68f305-77d6-432a-aa42-d7bb0662dbb7",
 			"key": "BASE_URL",
-			"value": "https://test-api.k6.io/",
+			"value": "https://test-api.k6.io",
 			"type": "string"
 		}
 	],
